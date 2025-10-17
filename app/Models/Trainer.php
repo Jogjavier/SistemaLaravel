@@ -21,6 +21,8 @@ class Trainer extends Model
         'slug'
     ];
 
+    protected $primaryKey = '_id';
+
     protected $appends = ['avatar_url'];
 
     protected $casts = [

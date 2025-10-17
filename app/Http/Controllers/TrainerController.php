@@ -9,7 +9,7 @@ use MongoDB\BSON\ObjectId;
 
 class TrainerController extends Controller
 {
-    // Mostrar solo trainers activos - CORREGIDO
+    
     public function index()
     {
         $trainers = Trainer::active()->get();
@@ -32,74 +32,65 @@ class TrainerController extends Controller
 
     public function store(Request $request)
     {
-      $request->validate([
-        'name' => 'required|string|max:255',
-        'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-    ]);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
 
-    $trainer = new Trainer();
-    $trainer->name = $request->input('name');
+        $trainer = new Trainer();
+        $trainer->name = $request->input('name');
+        $trainer->apellido = $request->input('apellido');
 
-    if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
-        $file = $request->file('avatar');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        
-        // Guardar DIRECTAMENTE en public/images
-        $destinationPath = public_path('images');
-        
-        if (!file_exists($destinationPath)) {
-            mkdir($destinationPath, 0755, true);
+        if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
+            $file = $request->file('avatar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            
+            
+            $destinationPath = public_path('images');
+            
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            
+            $file->move($destinationPath, $filename);
+            $trainer->avatar = $filename;
         }
-        
-        $file->move($destinationPath, $filename);
-        $trainer->avatar = $filename;
+
+        $trainer->save();
+        return redirect()->route('trainers.index')->with('success', 'Trainer creado exitosamente');
     }
 
-    $trainer->save();
-    return redirect()->route('trainers.index')->with('success', 'Trainer creado exitosamente');
-
-
-    }
-
-    public function show(Trainer $trainer)
+    public function show($id)
     {
+        $trainer = Trainer::find($id);
+
         return view('trainers.show', compact('trainer'));
     }
 
-    public function edit(Trainer $trainer)
+    public function edit($id)
     {
+        $trainer = Trainer::find($id);
+        //return $trainer;
         return view('trainers.edit', compact('trainer'));
     }
 
-    public function update(Request $request, Trainer $trainer)
+    public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'apellido' => 'required|string|max:255',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        ]);
+        $trainer = Trainer::find(new ObjectId($id));
+        //return $trainer;
+        //return $request;
+        $trainer->fill($request->except('_avatar'));
+        
+        if ($request->hasFile('avatar')){
+            $file = $request->file('avatar');
+            $name=time().'_'.$file->getClientOriginalName();
 
-        try {
-            if ($request->hasFile('avatar')) {
-                // Eliminar imagen anterior
-                if ($trainer->avatar) {
-                    Storage::delete('public/images/' . $trainer->avatar);
-                }
-
-                $image = $request->file('avatar');
-                $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                $image->storeAs('public/images', $filename);
-                $validated['avatar'] = $filename;
-            }
-
-            $trainer->update($validated);
-
-            return redirect()->route('trainers.index')
-                            ->with('success', 'Trainer actualizado exitosamente!');
-
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error al actualizar trainer: ' . $e->getMessage());
+            $trainer->avatar=$name;
+            $file->move(public_path().'/images/',$name);
         }
+        $trainer->save();
+            return redirect('trainers/'.$trainer->id);
     }
 
     // Eliminación lógica
@@ -134,24 +125,24 @@ class TrainerController extends Controller
         }
     }*/
 
-    // Eliminación permanente - CORREGIDO para MongoDB
+    // Eliminación permanente
     public function forceDestroy($id)
     {
-        $trainer = Trainer::withTrashed()->findOrFail($id);
-    
-    // Eliminar la imagen física si existe
-    if ($trainer->avatar) {
-        $imagePath = public_path('images/' . $trainer->avatar);
+            $trainer = Trainer::withTrashed()->findOrFail($id);
         
-        if (file_exists($imagePath)) {
-            @unlink($imagePath); // @ suprime errores de permisos
+        
+        if ($trainer->avatar) {
+            $imagePath = public_path('images/' . $trainer->avatar);
+            
+            if (file_exists($imagePath)) {
+                @unlink($imagePath); // @ suprime errores de permisos
+            }
         }
-    }
-    
-    // Eliminación permanente
-    $trainer->forceDelete();
+        
+        // Eliminación permanente
+        $trainer->forceDelete();
 
-    return redirect()->route('trainers.index')
+        return redirect()->route('trainers.index')
                     ->with('success', 'Trainer y su imagen eliminados permanentemente!');
     }
 

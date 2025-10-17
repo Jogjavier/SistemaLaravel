@@ -1,21 +1,29 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TrainerController;
 use Illuminate\Support\Facades\Route;
 
+// --- Ruta inicial ---
 Route::get('/', function () {
-    return redirect()->route('trainers.index');
+    return redirect()->route('login');
 });
 
-// Rutas principales con slug
-Route::resource('trainers', TrainerController::class);
+// --- Autenticación ---
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 
-// Búsqueda
-Route::get('/trainers-search', [TrainerController::class, 'search'])->name('trainers.search');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
 
-// Rutas para administración de eliminados - CORREGIDAS
-Route::delete('/trainers/{id}/force', [TrainerController::class, 'forceDestroy'])
-    ->name('trainers.force-destroy');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Rutas CRUD estándar
-Route::resource('trainers', TrainerController::class);
+// --- Rutas protegidas ---
+Route::middleware('auth')->group(function () {
+    // CRUD de trainers
+    Route::resource('trainers', TrainerController::class);
+
+    // Eliminación permanente
+    Route::delete('/trainers/{id}/force', [TrainerController::class, 'forceDestroy'])
+        ->name('trainers.force-destroy');
+});
