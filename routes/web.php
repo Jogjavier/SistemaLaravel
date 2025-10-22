@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TrainerController;
+use App\Http\Controllers\PDFController;
 use Illuminate\Support\Facades\Route;
 
 // --- Ruta inicial ---
@@ -27,3 +28,5 @@ Route::middleware('auth')->group(function () {
     Route::delete('/trainers/{id}/force', [TrainerController::class, 'forceDestroy'])
         ->name('trainers.force-destroy');
 });
+
+Route::get('generate-pdf', [PDFController::class, 'generatePDF']);

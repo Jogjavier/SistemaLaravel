@@ -70,14 +70,14 @@ class TrainerController extends Controller
 
     public function edit($id)
     {
-        $trainer = Trainer::find($id);
+        $trainer = Trainer::where('slug', $id)->firstOrFail();
         //return $trainer;
         return view('trainers.edit', compact('trainer'));
     }
 
     public function update(Request $request, $id)
     {
-        $trainer = Trainer::find(new ObjectId($id));
+        $trainer = Trainer::where('slug', $id)->firstOrFail();
         //return $trainer;
         //return $request;
         $trainer->fill($request->except('_avatar'));
