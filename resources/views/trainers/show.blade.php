@@ -5,6 +5,12 @@
 @csrf
 
 <div class="row justify-content-center">
+    {{-- Botón de PDF Individual --}}
+    <div class="d-flex gap-2">
+        <a href="{{ route('trainers.pdf', $trainer->_id) }}" class="btn btn-info btn-sm w-20">
+            <i class="bi bi-box-arrow-right"></i> Descargar PDF de detalles del Trainer
+        </a>
+    </div>
     <div class="col-sm-6">
         <div class="card text-center" style="width: 18rem; margin-top: 70px;">
             <img 

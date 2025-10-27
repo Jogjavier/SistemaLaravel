@@ -6,16 +6,23 @@
 
 <div class="container mt-4">
 
-    {{-- Encabezado con botón de Logout --}}
+    {{-- Encabezado con botón de Logout y botón de Descargar Listado --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="m-0">Listado de Trainers</h3>
+        
+        <div class="d-flex gap-2">
+            {{-- NUEVO BOTÓN PARA DESCARGAR EL PDF COMPLETO --}}
+            <a href="{{ route('trainers.all.pdf') }}" class="btn btn-primary btn-sm">
+                <i class="bi bi-file-earmark-pdf"></i> Descargar Listado PDF
+            </a>
 
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="btn btn-outline-danger btn-sm">
-                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
-            </button>
-        </form>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                </button>
+            </form>
+        </div>
     </div>
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
@@ -40,8 +47,8 @@
                             </a>
 
                             <form action="{{ route('trainers.destroy', $trainer->slug) }}" 
-                                  method="POST" 
-                                  onsubmit="return confirm('¿Mover {{ $trainer->name }} a la papelera?');">
+                                    method="POST" 
+                                    onsubmit="return confirm('¿Mover {{ $trainer->name }} a la papelera?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-warning btn-sm w-100">
@@ -50,8 +57,8 @@
                             </form>
 
                             <form action="{{ route('trainers.force-destroy', $trainer->_id) }}" 
-                                  method="POST" 
-                                  onsubmit="return confirm('ELIMINAR PERMANENTEMENTE a {{ $trainer->name }}?\n\nEsta acción NO se puede deshacer y eliminará también su imagen.');">
+                                    method="POST" 
+                                    onsubmit="return confirm('ELIMINAR PERMANENTEMENTE a {{ $trainer->name }}?\n\nEsta acción NO se puede deshacer y eliminará también su imagen.');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm w-100">

@@ -30,3 +30,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('generate-pdf', [PDFController::class, 'generatePDF']);
+Route::get('/trainers/pdf/all', [TrainerController::class, 'downloadPdf'])->name('trainers.all.pdf');
+Route::get('/trainers/{id}/pdf', [TrainerController::class, 'downloadPdf'])->name('trainers.pdf');
+    // RUTA EXISTENTE (Individual):

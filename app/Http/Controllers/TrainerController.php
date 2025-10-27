@@ -6,6 +6,7 @@ use App\Models\Trainer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use MongoDB\BSON\ObjectId;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TrainerController extends Controller
 {
@@ -161,6 +162,31 @@ class TrainerController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('trainers.trashed')
                             ->with('error', 'Error al vaciar papelera: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadPdf(string $id = null)
+    {
+        // Si se proporciona un ID, generamos la ficha individual
+        if ($id) {
+            
+            $trainer = Trainer::findOrFail($id);
+            
+            $pdf = Pdf::loadView('trainers.pdf', compact('trainer'));
+           
+            return $pdf->download("ficha-trainer-{$trainer->name}-{$trainer->apellido}.pdf");
+
+        } 
+        
+        else {
+            
+            $trainers = Trainer::all(); // Obtener todos los documentos de la colección
+
+            $pdf = Pdf::loadView('trainers.pdf', compact('trainers'));
+
+            $pdf->setPaper('a4', 'portrait');
+
+            return $pdf->download('listado-completo-trainers.pdf');
         }
     }
 }
