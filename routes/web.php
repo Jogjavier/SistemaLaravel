@@ -21,15 +21,19 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // --- Rutas protegidas ---
 Route::middleware('auth')->group(function () {
-    // CRUD de trainers
+    
+    // Custom trainer routes (MUST be BEFORE resource route)
+    Route::get('/trainers/trashed', [TrainerController::class, 'trashed'])->name('trainers.trashed');
+    Route::post('/trainers/empty-trash', [TrainerController::class, 'emptyTrash'])->name('trainers.emptyTrash');
+    Route::get('/trainers/pdf-all', [TrainerController::class, 'downloadPdf'])->name('trainers.pdf.all');
+    
+    // CRUD de trainers (Resource route)
     Route::resource('trainers', TrainerController::class);
-
-    // Eliminación permanente
-    Route::delete('/trainers/{id}/force', [TrainerController::class, 'forceDestroy'])
-        ->name('trainers.force-destroy');
+    
+    // Routes with {id} parameter (MUST be AFTER resource route to avoid conflicts)
+    Route::get('/trainers/{id}/pdf', [TrainerController::class, 'downloadPdf'])->name('trainers.pdf');
+    Route::delete('/trainers/{id}/force', [TrainerController::class, 'forceDestroy'])->name('trainers.force-destroy');
 });
 
+// PDF Controller route (if still needed)
 Route::get('generate-pdf', [PDFController::class, 'generatePDF']);
-Route::get('/trainers/pdf/all', [TrainerController::class, 'downloadPdf'])->name('trainers.all.pdf');
-Route::get('/trainers/{id}/pdf', [TrainerController::class, 'downloadPdf'])->name('trainers.pdf');
-    // RUTA EXISTENTE (Individual):

@@ -11,9 +11,28 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class TrainerController extends Controller
 {
     
-    public function index()
+    public function index(Request $request)
     {
-        $trainers = Trainer::active()->get();
+        if ($request->has('search') && !empty($request->search)) {
+            try {
+                // Intentar búsqueda con Scout/Meilisearch
+                $trainers = Trainer::search($request->search)
+                    ->query(fn($query) => $query->whereNull('deleted_at'))
+                    ->get();
+            } catch (\Exception $e) {
+                // Fallback: búsqueda manual si Meilisearch falla
+                $searchTerm = $request->search;
+                $trainers = Trainer::where(function($query) use ($searchTerm) {
+                        $query->where('name', 'like', "%{$searchTerm}%")
+                            ->orWhere('apellido', 'like', "%{$searchTerm}%");
+                    })
+                    ->whereNull('deleted_at')
+                    ->get();
+            }
+        } else {
+            $trainers = Trainer::active()->get();
+        }
+        
         $trashedCount = Trainer::onlyTrashed()->count();
         
         return view('trainers.index', compact('trainers', 'trashedCount'));

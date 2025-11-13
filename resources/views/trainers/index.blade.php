@@ -9,11 +9,29 @@
     {{-- Encabezado con botón de Logout y botón de Descargar Listado --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="m-0">Listado de Trainers</h3>
-        
+        <form action="{{ route('trainers.index') }}" method="GET">
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                name="search" 
+                                class="form-control" 
+                                placeholder="Buscar por nombre o apellido..." 
+                                value="{{ request('search') }}"
+                            >
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ route('trainers.index') }}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Limpiar
+                                </a>
+                            @endif
+                        </div>
+                    </form>
         <div class="d-flex gap-2">
             {{-- NUEVO BOTÓN PARA DESCARGAR EL PDF COMPLETO --}}
-            <a href="{{ route('trainers.all.pdf') }}" class="btn btn-primary btn-sm">
-                <i class="bi bi-file-earmark-pdf"></i> Descargar Listado PDF
+            <a href="{{ route('trainers.pdf.all') }}" class="btn btn-info">
+                <i class="bi bi-file-pdf"></i> Descargar PDF Completo
             </a>
 
             <form action="{{ route('logout') }}" method="POST">

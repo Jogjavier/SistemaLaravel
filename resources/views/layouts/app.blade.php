@@ -3,53 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'App')</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@yield('title', 'App Shop')</title>
+
+    {{-- Material Kit CSS --}}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://demos.creative-tim.com/material-kit/assets/css/material-kit.min.css?v=3.0.4" rel="stylesheet" />
+    
+    {{-- Bootstrap Icons --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    {{-- Estilos personalizados --}}
     <style>
-        .navbar-brand { font-weight: bold; }
-        .card-img-top { height: 250px; object-fit: cover; }
+        .gap-2 {
+            gap: 0.5rem !important;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">App</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('trainers.index') }}">Trainers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('trainers.create') }}">Nuevo Trainer</a>
-                    </li>
-                </ul>
+    {{-- Navbar --}}
+    @include('partials.navbar')
+
+    {{-- Mensajes Flash --}}
+    <div class="container mt-3">
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <span class="alert-icon"><i class="material-icons">check_circle</i></span>
+                <span class="alert-text"><strong>Éxito!</strong> {{ session('success') }}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        </div>
-    </nav>
+        @endif
 
-    <main class="py-4">
-        <div class="container">
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span class="alert-icon"><i class="material-icons">error</i></span>
+                <span class="alert-text"><strong>Error!</strong> {{ session('error') }}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+    </div>
 
-            @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            @yield('content')
-        </div>
+    {{-- Contenido Principal --}}
+    <main>
+        @yield('content')
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {{-- Material Kit JS --}}
+    <script src="https://demos.creative-tim.com/material-kit/assets/js/core/popper.min.js"></script>
+    <script src="https://demos.creative-tim.com/material-kit/assets/js/core/bootstrap.min.js"></script>
+    <script src="https://demos.creative-tim.com/material-kit/assets/js/plugins/perfect-scrollbar.min.js"></script>
+    <script src="https://demos.creative-tim.com/material-kit/assets/js/material-kit.min.js?v=3.0.4"></script>
+    
+    {{-- Scripts personalizados --}}
     @stack('scripts')
 </body>
 </html>

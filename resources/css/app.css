@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'material-kit/assets/css/material-kit.min.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

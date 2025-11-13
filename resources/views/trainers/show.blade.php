@@ -2,8 +2,6 @@
 @section('title', 'Detalles del Trainer')
 
 @section('content')
-@csrf
-
 <div class="row justify-content-center">
     {{-- Botón de PDF Individual --}}
     <div class="d-flex gap-2">
@@ -25,8 +23,12 @@
                 </p>
 
                 <div class="mt-3">
-                    <a href="{{ route('trainers.destroy', $trainer->_id) }}" class="btn btn-primary">Delete</a>
-                    <a href="{{ route('trainers.edit', $trainer->_id) }}" class="btn btn-secondary">Editar</a>
+                    <form action="{{ route('trainers.destroy', $trainer) }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-primary" onclick="return confirm('¿Estás seguro de eliminar este trainer?')">Delete</button>
+                    </form>
+                    <a href="{{ route('trainers.edit', $trainer) }}" class="btn btn-secondary">Editar</a>
                 </div>
             </div>
         </div>
